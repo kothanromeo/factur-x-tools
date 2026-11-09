@@ -3,8 +3,10 @@ export const SITE = {
   tagline: 'Lire, valider et créer des factures Factur-X, sans envoyer vos fichiers',
   author: 'Roméo Kothan',
   authorUrl: 'https://github.com/kothanromeo',
-  /** Renseignez votre profil LinkedIn pour l'afficher sur le site (signature, page À propos). */
-  linkedin: '',
+  linkedin: 'https://www.linkedin.com/in/romeo-kothan/',
+  instagram: 'https://www.instagram.com/romeokothan/',
+  instagramHandle: '@romeokothan',
+  portfolio: 'https://kothanromeo.dev/',
   repo: 'https://github.com/kothanromeo/factur-x-tools',
   locale: 'fr_FR',
   lang: 'fr',

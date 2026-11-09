@@ -1,6 +1,7 @@
 import { buildXml, compute, type GeneratorInput, type LineInput } from '../lib/facturx/build';
 import { analyzeBytes, renderAnalysis } from './analyzer';
 import { download, esc, money } from './view';
+import { bindThanks, thanksCard, waitCard } from './creator';
 
 const STORE_KEY = 'fxt:vendeur:v1';
 const REMEMBERED = ['s.name', 's.siren', 's.vatId', 's.email', 's.line1', 's.postcode', 's.city', 's.country', 'iban', 'bic', 'paymentTerms', 'vatRegime'];
@@ -171,6 +172,9 @@ export function mountGenerator(form: HTMLFormElement) {
     const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     btn.disabled = true;
     btn.textContent = 'Génération…';
+    out.innerHTML = waitCard('Génération de votre facture Factur-X…');
+    out.hidden = false;
+    out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     try {
       const [{ embedFacturX }, xml] = await Promise.all([import('../lib/facturx/pdf'), Promise.resolve(buildXml(input))]);
       let source: Uint8Array;
@@ -189,12 +193,14 @@ export function mountGenerator(form: HTMLFormElement) {
       out.innerHTML = `<div class="banner ok"><div><strong>Votre facture Factur-X est prête</strong>
           <p>${esc(name)} · ${(bytes.length / 1024).toFixed(0)} Ko · profil EN 16931</p>
           <div class="btn-row" style="margin-top:.7rem"><button type="button" class="btn" data-dl>Télécharger le PDF</button></div></div></div>
+        ${thanksCard('generation')}
         ${warnings.map((w) => `<p class="notice">${esc(w)}</p>`).join('')}
         <h3>Vérification automatique du fichier généré</h3>
         <div data-result hidden></div>`;
       out.hidden = false;
       out.querySelector('[data-dl]')!.addEventListener('click', () => download(bytes, name, 'application/pdf'));
-      renderAnalysis(out, await analyzeBytes(bytes, name), 'controles');
+      bindThanks(out);
+      renderAnalysis(out, await analyzeBytes(bytes, name), 'controles', { thanks: false });
       out.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (err) {
       out.innerHTML = `<div class="banner err"><div><strong>La génération a échoué</strong><p>${esc(err instanceof Error ? err.message : err)}</p></div></div>`;

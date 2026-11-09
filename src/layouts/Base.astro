@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { NAV, SITE, href } from '../site';
+import { ICONS } from '../icons';
+import CreatorBand from '../components/CreatorBand.astro';
 
 interface Props {
   title: string;
@@ -74,12 +76,16 @@ const websiteSchema = {
             <a href={href(n.href)} aria-current={current.startsWith(href(n.href)) ? 'page' : undefined}>{n.label}</a>
           ))}
           <a href={SITE.repo} rel="noopener">GitHub</a>
+          <a class="nav-linkedin" href={SITE.linkedin} rel="me noopener" target="_blank" title={`${SITE.author} sur LinkedIn`}>
+            <Fragment set:html={ICONS.linkedin} /><span>Suivre</span>
+          </a>
         </nav>
       </div>
     </header>
     <main id="contenu">
       <slot />
     </main>
+    <CreatorBand />
     <footer class="site-footer">
       <div class="wrap">
         <div>
@@ -108,7 +114,9 @@ const websiteSchema = {
           <ul>
             <li><a href={href('/a-propos/')}>À propos</a></li>
             <li><a href={SITE.repo} rel="noopener">Code source (licence MIT)</a></li>
-            <li>Créé par <a href={SITE.linkedin || SITE.authorUrl} rel="author noopener">{SITE.author}</a></li>
+            <li>Créé par <a href={SITE.linkedin} rel="author noopener">{SITE.author}</a></li>
+            <li><a href={SITE.instagram} rel="me noopener">Instagram {SITE.instagramHandle}</a></li>
+            <li><a href={SITE.portfolio} rel="me noopener">Portfolio</a></li>
           </ul>
         </div>
       </div>

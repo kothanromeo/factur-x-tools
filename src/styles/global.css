@@ -236,3 +236,52 @@ legend { font-weight: 700; padding: 0 0.4rem; }
 .section { margin-top: 3rem; }
 .two-col { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---- Créateur : bandeau, boutons LinkedIn, encarts ---- */
+:root { --linkedin: #0a66c2; --linkedin-hover: #004182; }
+.ic { width: 1.1em; height: 1.1em; flex: none; }
+
+.btn-linkedin { display: inline-flex; align-items: center; gap: 0.55rem; background: var(--linkedin); color: #fff; font-weight: 700; font-size: 1rem; padding: 0.7rem 1.2rem; border-radius: 999px; text-decoration: none; box-shadow: 0 2px 8px rgb(10 102 194 / 30%); transition: background 0.15s, transform 0.15s; white-space: nowrap; }
+.btn-linkedin:hover { background: var(--linkedin-hover); transform: translateY(-1px); text-decoration: none; }
+.btn-linkedin:focus-visible { outline: 2px solid var(--linkedin); outline-offset: 3px; }
+.btn-linkedin .ic { width: 1.25em; height: 1.25em; }
+.btn-linkedin.small { font-size: 0.9rem; padding: 0.5rem 0.95rem; }
+
+.site-nav .nav-linkedin { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--linkedin); font-weight: 600; }
+.site-nav .nav-linkedin:hover { background: rgb(10 102 194 / 10%); color: var(--linkedin); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .site-nav .nav-linkedin { color: #70b5f9; } }
+:root[data-theme='dark'] .site-nav .nav-linkedin { color: #70b5f9; }
+
+.avatar { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--linkedin)); color: #fff; font-weight: 800; letter-spacing: 0.02em; }
+
+.creator-band { margin-top: 4rem; background: var(--surface); border-top: 1px solid var(--line); position: relative; }
+.creator-band::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; background: linear-gradient(90deg, var(--accent), var(--linkedin)); }
+.creator-band + .site-footer { margin-top: 0; }
+.creator-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.2rem 2rem; padding-top: 1.6rem; padding-bottom: 1.6rem; }
+.creator-id { display: flex; gap: 1rem; align-items: flex-start; flex: 1 1 420px; min-width: 0; }
+.creator-title { margin: 0 0 0.25rem; font-size: 1.05rem; }
+.creator-sub { margin: 0; color: var(--ink-2); font-size: 0.93rem; max-width: 620px; }
+.creator-links { display: flex; flex-direction: column; align-items: flex-start; gap: 0.7rem; }
+.creator-secondary { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; }
+.creator-secondary a { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--ink-2); font-size: 0.9rem; text-decoration: none; }
+.creator-secondary a:hover { color: var(--ink); text-decoration: underline; }
+
+.author-box { display: flex; gap: 1rem; align-items: flex-start; margin: 2rem 0; padding: 1.1rem 1.2rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.author-box p { margin: 0 0 0.7rem; font-size: 0.97rem; }
+
+/* Encart pendant le chargement */
+.wait-card { display: flex; gap: 1rem; align-items: center; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.spinner { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+.wait-card p { margin: 0; }
+.wait-card .wait-sub { font-size: 0.9rem; color: var(--ink-2); margin-top: 0.15rem; }
+.wait-card a { color: var(--linkedin); font-weight: 600; }
+
+/* Encart de remerciement après un résultat */
+.thanks { position: relative; display: flex; flex-wrap: wrap; gap: 0.8rem 1.2rem; align-items: center; justify-content: space-between; margin-top: 1.2rem; padding: 1rem 2.6rem 1rem 1.1rem; border-radius: var(--radius); border: 1px solid rgb(10 102 194 / 35%); background: rgb(10 102 194 / 7%); }
+.thanks p { margin: 0; font-size: 0.95rem; flex: 1 1 280px; }
+.thanks .close { position: absolute; top: 0.4rem; right: 0.5rem; background: none; border: 0; font-size: 1.25rem; line-height: 1; color: var(--muted); cursor: pointer; padding: 0.3rem; }
+.thanks .close:hover { color: var(--ink); }
+.thanks .more { font-size: 0.85rem; color: var(--ink-2); display: block; margin-top: 0.2rem; }
+.thanks .more a { color: inherit; }

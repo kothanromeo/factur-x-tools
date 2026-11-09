@@ -2,6 +2,7 @@ import { parseXml, readInvoice, XmlParseError } from '../lib/facturx/parse';
 import { summarize, validateInvoice } from '../lib/facturx/validate';
 import type { CheckResult, Invoice } from '../lib/facturx/types';
 import { download, esc, prettyXml, renderChecks, renderInvoice } from './view';
+import { bindThanks, thanksCard, waitCard } from './creator';
 
 type Tab = 'facture' | 'controles' | 'xml';
 
@@ -88,7 +89,7 @@ function banner(a: Analysis): string {
   return `<div class="banner ok"><div><strong>Aucune anomalie détectée</strong><p>${title}. ${s.passed} contrôles réussis.</p></div></div>`;
 }
 
-export function renderAnalysis(root: HTMLElement, a: Analysis, focus: Tab) {
+export function renderAnalysis(root: HTMLElement, a: Analysis, focus: Tab, opts: { thanks?: boolean } = {}) {
   const out = root.querySelector<HTMLElement>('[data-result]')!;
   const s = summarize(a.checks);
   const tabs: { id: Tab; label: string; enabled: boolean }[] = [
@@ -125,8 +126,10 @@ export function renderAnalysis(root: HTMLElement, a: Analysis, focus: Tab) {
     `<div class="btn-row" style="margin-top:1rem">
       ${a.pdfBytes ? '<button type="button" class="btn ghost" data-open-pdf>Ouvrir le PDF</button>' : ''}
       <button type="button" class="btn ghost" data-reset>Analyser un autre fichier</button>
-    </div>`;
+    </div>` +
+    (a.invoice && opts.thanks !== false ? thanksCard('analyse') : '');
   out.hidden = false;
+  bindThanks(out);
 
   const select = (id: string) => {
     out.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
@@ -198,10 +201,26 @@ export function mountAnalyzer(root: HTMLElement) {
   const input = root.querySelector<HTMLInputElement>('[data-file]')!;
   const sample = root.querySelector<HTMLButtonElement>('[data-sample]');
 
-  const run = async (bytes: Uint8Array, name: string) => {
+  const out = root.querySelector<HTMLElement>('[data-result]')!;
+  /** Affiche l'encart d'attente seulement si l'opération dure (pas de délai artificiel). */
+  const showWait = (label: string) =>
+    setTimeout(() => {
+      out.innerHTML = waitCard(label);
+      out.hidden = false;
+    }, 150);
+
+  const run = async (bytes: Uint8Array | (() => Promise<Uint8Array>), name: string, label = 'Lecture de la facture…') => {
     drop.setAttribute('aria-busy', 'true');
+    const timer = showWait(label);
     try {
-      renderAnalysis(root, await analyzeBytes(bytes, name), focus);
+      const data = typeof bytes === 'function' ? await bytes() : bytes;
+      const analysis = await analyzeBytes(data, name);
+      clearTimeout(timer);
+      renderAnalysis(root, analysis, focus);
+    } catch (e) {
+      clearTimeout(timer);
+      out.innerHTML = `<div class="banner err"><div><strong>Erreur inattendue</strong><p>${esc(e instanceof Error ? e.message : e)}</p></div></div>`;
+      out.hidden = false;
     } finally {
       drop.removeAttribute('aria-busy');
     }
@@ -234,7 +253,7 @@ export function mountAnalyzer(root: HTMLElement) {
     const old = sample.textContent;
     sample.textContent = 'Génération…';
     try {
-      await run(await makeSamplePdf(), 'exemple-factur-x.pdf');
+      await run(makeSamplePdf, 'exemple-factur-x.pdf', 'Création d’une facture d’exemple…');
     } finally {
       sample.disabled = false;
       sample.textContent = old;
