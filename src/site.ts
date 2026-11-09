@@ -8,6 +8,8 @@ export const SITE = {
   instagramHandle: '@romeokothan',
   portfolio: 'https://kothanromeo.dev/',
   repo: 'https://github.com/kothanromeo/factur-x-tools',
+  /** Autres outils du même auteur, liés depuis le pied de page. */
+  siblings: [{ name: 'CFONB & camt Tools', url: 'https://cfonb-camt-tools.kothanromeo.dev/', text: 'Convertir un relevé bancaire CFONB 120 ou camt.053 en Excel' }],
   locale: 'fr_FR',
   lang: 'fr',
 };

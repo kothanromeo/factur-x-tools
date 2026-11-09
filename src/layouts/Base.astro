@@ -110,6 +110,10 @@ const websiteSchema = {
             <li><a href={href('/valider-factur-x/')}>Valider un fichier Factur-X</a></li>
             <li><a href={href('/creer-facture-factur-x/')}>Créer une facture Factur-X</a></li>
           </ul>
+          <h2 style="margin-top:1.2rem">Du même auteur</h2>
+          <ul>
+            {SITE.siblings.map((t) => <li><a href={t.url} rel="noopener">{t.name}</a> : {t.text}</li>)}
+          </ul>
         </div>
         <div>
           <h2>Guides</h2>
