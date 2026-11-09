@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Analyzer from '../components/Analyzer.astro';
+import ToolCards from '../components/ToolCards.astro';
+import Faq from '../components/Faq.astro';
+import { faqSchema, href, toolSchema, type FaqItem } from '../site';
+
+const site = Astro.site!;
+const posts = (await getCollection('guides')).sort((a, b) => +b.data.published - +a.data.published);
+
+const faq: FaqItem[] = [
+  {
+    q: 'Comment ouvrir une facture Factur-X ?',
+    a: '<p>Une facture Factur-X s’ouvre comme n’importe quel PDF : Acrobat Reader, l’aperçu de votre navigateur ou de votre téléphone l’affichent normalement. Ce que ces lecteurs ne montrent pas, c’est le fichier XML caché à l’intérieur. Pour le voir, déposez le PDF dans l’outil en haut de cette page : il extrait le XML et l’affiche sous forme de facture lisible.</p>',
+  },
+  {
+    q: 'Mes factures sont-elles envoyées sur un serveur ?',
+    a: '<p>Non. Le site est statique : il n’a pas de serveur capable de recevoir un fichier. La lecture du PDF, l’extraction du XML et les contrôles tournent en JavaScript dans votre navigateur. Vous pouvez le vérifier dans l’onglet « Réseau » des outils de développement, ou couper votre connexion après le chargement de la page : tout continue de fonctionner.</p>',
+  },
+  {
+    q: 'Quelle différence entre Factur-X et ZUGFeRD ?',
+    a: '<p>Depuis ZUGFeRD 2.1, c’est techniquement le même format : un PDF/A-3 qui embarque un XML au standard CII. Factur-X est le nom français (porté par le FNFE-MPE), ZUGFeRD le nom allemand (porté par le FeRD). Seul le nom de la pièce jointe change parfois : <code>factur-x.xml</code> d’un côté, <code>zugferd-invoice.xml</code> de l’autre. Cet outil lit les deux.</p>',
+  },
+  {
+    q: 'Un PDF ordinaire est-il une facture électronique ?',
+    a: '<p>Non. Depuis la réforme, une facture électronique est une facture <em>structurée</em> : ses données doivent être lisibles par une machine. Un PDF fait avec Word, même envoyé par e-mail, reste une facture papier numérisée aux yeux de l’administration. Factur-X résout ce problème en ajoutant les données structurées dans le PDF.</p>',
+  },
+  {
+    q: 'Est-ce que l’outil est gratuit ? Pour combien de temps ?',
+    a: '<p>Il est gratuit et le restera : le code est publié sous licence MIT sur GitHub, et le site ne coûte rien à héberger puisqu’il n’y a pas de serveur. Si un jour le site disparaissait, n’importe qui pourrait le remettre en ligne à partir du code source.</p>',
+  },
+];
+---
+<Base
+  title="Factur-X : lecteur, validateur et générateur gratuit en ligne"
+  description="Ouvrez, vérifiez ou créez une facture Factur-X (ZUGFeRD) gratuitement. Le XML est extrait et contrôlé directement dans votre navigateur, sans envoi de fichier. Open source."
+  schema={[toolSchema(site, { name: 'Lecteur Factur-X', path: '/', description: 'Lecteur et validateur de factures Factur-X dans le navigateur.' }), faqSchema(faq)]}
+>
+  <section class="hero wrap">
+    <h1>Lire, vérifier et créer une facture Factur-X</h1>
+    <p class="lead">
+      Déposez une facture PDF : l’outil sort le XML qu’elle contient, l’affiche en clair et vous dit si elle sera acceptée.
+      Pas d’inscription, pas d’envoi de fichier, pas de publicité.
+    </p>
+    <ul class="badges">
+      <li>100 % dans le navigateur</li>
+      <li>Factur-X 1.0x / ZUGFeRD 2.x</li>
+      <li>Profils MINIMUM à EXTENDED</li>
+      <li>Open source (MIT)</li>
+    </ul>
+  </section>
+
+  <div class="wrap">
+    <Analyzer />
+
+    <section class="section">
+      <h2>Trois outils, un seul format</h2>
+      <ToolCards />
+    </section>
+
+    <section class="section two-col">
+      <div>
+        <h2>Factur-X en deux phrases</h2>
+        <p>
+          Une facture Factur-X ressemble à un PDF normal. La différence est invisible : le PDF transporte en pièce jointe un fichier
+          <code>factur-x.xml</code> qui contient les mêmes informations (vendeur, client, lignes, TVA, totaux) dans un format qu’un logiciel comptable sait lire sans ressaisie.
+        </p>
+        <p>
+          C’est l’un des trois formats acceptés par la réforme de la facturation électronique en France, avec UBL et CII.
+          Pour une petite entreprise, c’est souvent le plus simple, parce que le client peut toujours lire la facture à l’œil nu.
+          <a href={href('/guides/factur-x-explication/')}>Lire l’explication détaillée</a>.
+        </p>
+      </div>
+      <div>
+        <h2>Pourquoi j’ai fait ce site</h2>
+        <p>
+          En cherchant un moyen simple d’ouvrir le XML d’une facture reçue, je suis tombé sur des sites qui demandent de créer un compte,
+          ou qui envoient le fichier sur leur serveur sans dire ce qu’ils en font. Pour des factures, qui contiennent des IBAN et des montants, ça me gênait.
+        </p>
+        <p>
+          Ici, tout se passe dans votre navigateur et le <a href="https://github.com/kothanromeo/factur-x-tools" rel="noopener">code est public</a>.
+          Les contrôles reprennent les règles de la norme EN 16931, ce qui permet de comprendre <em>pourquoi</em> un fichier serait refusé.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Les guides</h2>
+      <ul class="post-list">
+        {posts.map((p) => (
+          <li class="card">
+            <a href={href(`/guides/${p.id}/`)}>
+              <h3>{p.data.title}</h3>
+              <p>{p.data.description}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <Faq items={faq} />
+  </div>
+</Base>

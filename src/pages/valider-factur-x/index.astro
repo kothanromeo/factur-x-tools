@@ -1,0 +1,119 @@
+---
+import Base from '../../layouts/Base.astro';
+import Analyzer from '../../components/Analyzer.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Valider un fichier Factur-X', path: '/valider-factur-x/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Cet outil remplace-t-il le validateur officiel ?',
+    a: '<p>Non, et il ne prétend pas le faire. La validation officielle passe par le schéma XSD, les règles Schematron de la norme EN 16931 (plusieurs centaines) et un contrôle PDF/A complet. Ici, on vérifie les règles qui expliquent la grande majorité des rejets, avec un message en français qui dit quoi corriger. Pour une certification formelle, utilisez en complément le validateur de votre plateforme agréée.</p>',
+  },
+  {
+    q: 'Que veulent dire les codes BR-CO-15, BR-S-02… ?',
+    a: '<p>Ce sont les identifiants des règles métier de la norme européenne EN 16931. « BR » signifie <em>business rule</em>, « CO » une règle de cohérence (calculs), « S » une règle propre à la TVA au taux normal. Les afficher permet de retrouver facilement la règle dans la documentation ou dans le message d’erreur d’une plateforme.</p>',
+  },
+  {
+    q: 'Une erreur et un avertissement, quelle différence ?',
+    a: '<p>Une <strong>erreur</strong> viole une règle de la norme : le fichier sera très probablement rejeté. Un <strong>avertissement</strong> signale un point qui ne bloque pas toujours techniquement mais qui pose problème au regard de la réforme française (SIREN du client absent, mentions de pénalités manquantes…) ou de PDF/A.</p>',
+  },
+  {
+    q: 'Mon fichier est en profil MINIMUM, est-ce un problème ?',
+    a: '<p>Pour la réforme française, oui : les profils MINIMUM et BASIC WL ne contiennent pas le détail des lignes de facture et ne sont pas acceptés comme facture électronique. Ils servent surtout à l’automatisation comptable. Il faut au minimum le profil BASIC, et en pratique EN 16931. <a href="' + href('/guides/profils-factur-x/') + '">Comparer les profils</a>.</p>',
+  },
+];
+---
+<Base
+  title="Valider un fichier Factur-X : vérificateur gratuit (EN 16931, PDF/A-3)"
+  description="Vérifiez une facture Factur-X avant de l’envoyer : calculs de TVA et totaux, champs obligatoires EN 16931, PDF/A-3, SIREN et nouvelles mentions 2026. Gratuit et 100 % local."
+  schema={[
+    toolSchema(site, { name: 'Validateur Factur-X', path: '/valider-factur-x/', description: 'Contrôle la conformité d’une facture Factur-X selon les règles EN 16931.' }),
+    breadcrumbSchema(site, crumbs),
+    faqSchema(faq),
+  ]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Valider un fichier Factur-X</h1>
+    <p class="lead">
+      Avant d’envoyer une facture, ou quand une plateforme vous la renvoie avec un code d’erreur incompréhensible :
+      déposez le PDF, l’outil passe en revue les règles de la norme EN 16931 et vous dit précisément ce qui ne va pas.
+    </p>
+  </section>
+
+  <div class="wrap">
+    <Analyzer focus="controles" label="Déposez le fichier Factur-X à valider (PDF ou XML)" />
+
+    <article class="prose narrow section">
+      <h2>Ce qui est contrôlé</h2>
+      <h3>Le conteneur PDF</h3>
+      <ul>
+        <li>présence d’un XML de facture en pièce jointe, avec le nom attendu (<code>factur-x.xml</code>) ;</li>
+        <li>relation de la pièce jointe (<code>AFRelationship</code>) ;</li>
+        <li>métadonnées XMP : déclaration PDF/A-3 et extension Factur-X (<code>fx:ConformanceLevel</code>) ;</li>
+        <li>cohérence entre le profil déclaré dans le PDF et celui du XML ;</li>
+        <li>présence d’un profil de couleur (<code>OutputIntent</code>), exigé par PDF/A ;</li>
+        <li>absence de chiffrement.</li>
+      </ul>
+      <h3>Les données obligatoires</h3>
+      <p>
+        Numéro et date de facture, type de document, devise, nom et pays du vendeur et de l’acheteur, identifiant du vendeur,
+        contenu de chaque ligne (quantité, unité, prix, désignation, catégorie de TVA), échéance ou conditions de paiement.
+        Chaque contrôle porte le numéro de la règle EN 16931 correspondante.
+      </p>
+      <h3>Les calculs</h3>
+      <p>C’est là que se cachent la plupart des rejets. L’outil recalcule :</p>
+      <ul>
+        <li>la somme des lignes par rapport au total déclaré (BR-CO-10) ;</li>
+        <li>le total HT après remises et frais (BR-CO-13) ;</li>
+        <li>chaque montant de TVA, base × taux, arrondi au centime (BR-CO-17) ;</li>
+        <li>le total de TVA par rapport à la ventilation (BR-CO-14) ;</li>
+        <li>le TTC = HT + TVA (BR-CO-15), puis le net à payer (BR-CO-16).</li>
+      </ul>
+      <h3>Les exigences françaises de 2026</h3>
+      <p>
+        SIREN du vendeur et de l’acheteur (avec vérification de la clé), cadre de facturation (catégorie d’opération),
+        et les trois mentions que les plateformes attendent sous forme de notes codées : indemnité forfaitaire de 40 € (<code>PMT</code>),
+        pénalités de retard (<code>PMD</code>) et escompte (<code>AAB</code>).
+        Le détail est expliqué dans le guide <a href={href('/guides/nouvelles-mentions-obligatoires-facture-2026/')}>sur les nouvelles mentions obligatoires</a>.
+      </p>
+
+      <h2>Les erreurs que l’on rencontre le plus souvent</h2>
+      <h3>Un centime d’écart sur la TVA</h3>
+      <p>
+        Le logiciel calcule la TVA ligne par ligne et additionne les montants arrondis, alors que la norme attend
+        le calcul sur la base totale de chaque taux. Sur une facture de 3 lignes à 20 %, l’écart est souvent de 0,01 €, ce qui peut suffire
+        à faire échouer la règle BR-CO-17 chez les validateurs stricts.
+      </p>
+      <h3>Pas de numéro de TVA alors que la TVA est facturée</h3>
+      <p>
+        Dès qu’une ligne est au taux normal (catégorie <code>S</code>), le numéro de TVA intracommunautaire du vendeur devient obligatoire (BR-S-02).
+        Le SIREN seul ne suffit pas.
+      </p>
+      <h3>La franchise en base mal codée</h3>
+      <p>
+        Une micro-entreprise qui ne facture pas de TVA doit utiliser la catégorie <code>E</code> (exonéré), un taux de 0 et
+        un motif d’exonération : « TVA non applicable, art. 293 B du CGI ». Mettre simplement un taux à 0 % en catégorie <code>S</code> est une erreur.
+      </p>
+      <h3>Un PDF « imprimé » à partir du Factur-X</h3>
+      <p>
+        Passer une facture Factur-X par « Imprimer en PDF » ou par un outil de compression supprime la pièce jointe XML.
+        Le fichier ressemble à l’original mais ce n’est plus une facture électronique.
+      </p>
+    </article>
+
+    <Faq items={faq} />
+
+    <section class="section">
+      <h2>Les autres outils</h2>
+      <ToolCards exclude="/valider-factur-x/" />
+    </section>
+  </div>
+</Base>

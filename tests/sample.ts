@@ -1,0 +1,41 @@
+import { defaultFrenchNotes, type GeneratorInput } from '../src/lib/facturx/build';
+
+export const sample: GeneratorInput = {
+  number: 'F-2026-0042',
+  issueDate: '2026-11-09',
+  typeCode: '380',
+  currency: 'EUR',
+  businessProcess: 'S1',
+  seller: {
+    name: 'Atelier Numérique SARL',
+    siren: '552100554',
+    vatId: 'FR40552100554',
+    email: 'facturation@atelier-numerique.fr',
+    line1: '12 rue des Lilas',
+    postcode: '69003',
+    city: 'Lyon',
+    country: 'FR',
+  },
+  buyer: {
+    name: 'Boulangerie Martin & Fils',
+    siren: '732829320',
+    line1: '4 place du Marché',
+    postcode: '38000',
+    city: 'Grenoble',
+    country: 'FR',
+  },
+  orderReference: 'BC-881',
+  deliveryDate: '2026-11-05',
+  vatRegime: 'normal',
+  lines: [
+    { name: 'Refonte du site vitrine', quantity: 1, unitCode: 'LS', unitPrice: 1850, vatRate: 20 },
+    { name: "Journée de formation à l'outil de gestion", quantity: 1.5, unitCode: 'DAY', unitPrice: 520, vatRate: 20 },
+    { name: 'Livre « Le pain au levain »', quantity: 3, unitCode: 'C62', unitPrice: 24.9, vatRate: 5.5 },
+  ],
+  dueDate: '2026-12-09',
+  paymentTerms: 'Paiement à 30 jours par virement.',
+  iban: 'FR76 3000 6000 0112 3456 7890 189',
+  bic: 'AGRIFRPP',
+  paymentReference: 'F-2026-0042',
+  notes: defaultFrenchNotes(),
+};

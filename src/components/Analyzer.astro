@@ -1,0 +1,28 @@
+---
+interface Props {
+  /** Onglet affiché en premier après l'analyse. */
+  focus?: 'facture' | 'controles' | 'xml';
+  label?: string;
+}
+const { focus = 'facture', label = 'Déposez votre facture Factur-X (PDF) ou son fichier XML' } = Astro.props;
+---
+<section class="analyzer" data-analyzer data-focus={focus} aria-label="Analyseur de facture Factur-X">
+  <div class="drop" data-drop>
+    <p class="big">{label}</p>
+    <p>Glissez-déposez le fichier ici, ou</p>
+    <div class="btn-row" style="justify-content:center">
+      <label class="btn" style="margin:0;color:var(--accent-ink)">
+        Choisir un fichier
+        <input type="file" accept=".pdf,.xml,application/pdf,text/xml,application/xml" data-file />
+      </label>
+      <button type="button" class="btn secondary" data-sample>Essayer avec un exemple</button>
+    </div>
+    <p class="privacy">🔒 Analyse 100 % locale : le fichier ne quitte pas votre ordinateur.</p>
+  </div>
+  <div class="result" data-result hidden aria-live="polite"></div>
+</section>
+
+<script>
+  import { mountAnalyzer } from '../scripts/analyzer';
+  document.querySelectorAll<HTMLElement>('[data-analyzer]').forEach(mountAnalyzer);
+</script>

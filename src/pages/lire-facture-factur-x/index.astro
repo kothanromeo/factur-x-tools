@@ -1,0 +1,132 @@
+---
+import Base from '../../layouts/Base.astro';
+import Analyzer from '../../components/Analyzer.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Lire une facture Factur-X', path: '/lire-facture-factur-x/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Pourquoi Adobe Reader ne m’affiche pas le XML ?',
+    a: '<p>Il le contient, mais il le range dans le panneau « Pièces jointes » (l’icône en forme de trombone dans la barre latérale). Vous pouvez l’enregistrer à partir de là, mais vous obtiendrez un XML brut de plusieurs centaines de lignes. Cet outil fait la même extraction puis met les données en forme.</p>',
+  },
+  {
+    q: 'Comment extraire le fichier XML d’un PDF Factur-X ?',
+    a: '<p>Déposez le PDF ci-dessus, ouvrez l’onglet « XML », puis cliquez sur « Télécharger ». Vous obtenez le fichier <code>factur-x.xml</code> exactement tel qu’il est stocké dans le PDF, octet pour octet. L’indentation affichée à l’écran sert seulement à la lecture.</p>',
+  },
+  {
+    q: 'Je n’ai que le fichier XML, sans le PDF. Ça marche ?',
+    a: '<p>Oui. Déposez directement le XML : s’il est au format CII (la racine commence par <code>CrossIndustryInvoice</code>), il sera affiché et contrôlé de la même façon. Les contrôles propres au PDF (PDF/A-3, métadonnées) seront simplement ignorés.</p>',
+  },
+  {
+    q: 'Le PDF et le XML affichent des montants différents. Lequel croire ?',
+    a: '<p>Juridiquement, pour une facture électronique au sens de la réforme, ce sont les données structurées (le XML) qui font foi. Un écart entre les deux est une anomalie à signaler au fournisseur : il faut lui demander une facture rectificative ou un avoir.</p>',
+  },
+  {
+    q: 'Et les factures UBL ou XRechnung ?',
+    a: '<p>Les factures XRechnung au format CII sont lues (le profil est détecté). Les factures UBL, un autre format XML, ne le sont pas encore : l’outil vous le signale clairement au lieu d’afficher un résultat faux.</p>',
+  },
+];
+---
+<Base
+  title="Lire une facture Factur-X en ligne : ouvrir et extraire le XML"
+  description="Ouvrez le XML caché dans une facture Factur-X ou ZUGFeRD et lisez-le comme une facture : lignes, TVA, IBAN, échéance. Gratuit, sans inscription, le PDF reste sur votre ordinateur."
+  schema={[
+    toolSchema(site, { name: 'Lecteur Factur-X', path: '/lire-facture-factur-x/', description: 'Affiche le contenu XML d’une facture Factur-X ou ZUGFeRD.' }),
+    breadcrumbSchema(site, crumbs),
+    faqSchema(faq),
+  ]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Lire une facture Factur-X</h1>
+    <p class="lead">
+      Votre fournisseur vous envoie un PDF « Factur-X » et vous voulez voir ce qu’il y a vraiment dedans ?
+      Déposez-le ici : le XML est extrait et présenté comme une facture, avec le détail des lignes, de la TVA et du paiement.
+    </p>
+  </section>
+
+  <div class="wrap">
+    <Analyzer focus="facture" label="Déposez la facture Factur-X ou ZUGFeRD à lire" />
+
+    <article class="prose narrow section">
+      <h2>Ce que vous voyez, et ce que le comptable voit</h2>
+      <p>
+        Quand vous ouvrez une facture Factur-X, votre lecteur PDF affiche la page « visuelle » : un logo, un tableau, des totaux.
+        Le logiciel comptable du destinataire, lui, ne regarde pas cette page. Il lit le fichier <code>factur-x.xml</code> attaché au PDF
+        et importe les données sans les ressaisir.
+      </p>
+      <p>
+        Les deux devraient dire la même chose. En pratique, ce n’est pas toujours le cas : un numéro de TVA oublié dans le XML,
+        une ligne arrondie différemment, un IBAN qui a changé dans le modèle Word mais pas dans le paramétrage du logiciel de facturation…
+        Lire le XML, c’est vérifier ce que la machine va réellement comprendre.
+      </p>
+
+      <h2>Ce que l’outil affiche</h2>
+      <ul>
+        <li><strong>Le vendeur et l’acheteur</strong> : nom, adresse, SIREN, numéro de TVA, e-mail.</li>
+        <li><strong>Le document</strong> : type (facture, avoir, acompte…), numéro, dates, profil Factur-X, cadre de facturation.</li>
+        <li><strong>Les lignes</strong> : désignation, quantité, unité, prix unitaire, taux de TVA, montant HT.</li>
+        <li><strong>La ventilation de TVA</strong> par taux, avec les motifs d’exonération éventuels (franchise en base, autoliquidation…).</li>
+        <li><strong>Les totaux</strong> : HT, TVA, TTC, acomptes déjà versés, net à payer.</li>
+        <li><strong>Le paiement</strong> : moyen, IBAN, BIC, référence, conditions et échéance.</li>
+        <li><strong>Les notes</strong> : pénalités de retard, indemnité de 40 €, escompte et autres mentions.</li>
+      </ul>
+      <p>
+        Un onglet « Contrôles » vérifie en même temps la cohérence du fichier. Si vous cherchez surtout à savoir si une facture est valide,
+        la page <a href={href('/valider-factur-x/')}>valider un fichier Factur-X</a> ouvre directement ce résultat.
+      </p>
+
+      <h2>Où se cache le XML dans le PDF ?</h2>
+      <p>
+        Techniquement, Factur-X s’appuie sur PDF/A-3, une variante du PDF conçue pour l’archivage qui autorise les fichiers joints.
+        Le XML est stocké comme une pièce jointe classique, déclarée à deux endroits du document : dans l’arbre des fichiers incorporés
+        (<code>/EmbeddedFiles</code>) et dans la liste des « fichiers associés » (<code>/AF</code>) avec une relation <code>Alternative</code>,
+        qui signifie « ce fichier est une autre représentation du même contenu ».
+      </p>
+      <p>
+        L’outil lit ces deux emplacements, car certains logiciels n’en remplissent qu’un. Il reconnaît aussi les noms utilisés par
+        ZUGFeRD (<code>zugferd-invoice.xml</code>) et XRechnung (<code>xrechnung.xml</code>).
+      </p>
+      <blockquote>
+        <p>Si l’outil vous répond « ce PDF n’est pas une facture Factur-X », c’est qu’il n’y a aucun XML de facture dans le fichier.
+        Le document a peut-être été « imprimé en PDF » à partir d’un Factur-X, ce qui supprime les pièces jointes.</p>
+      </blockquote>
+
+      <h2>Exemple : à quoi ressemble le XML</h2>
+      <p>Voici un extrait réel, le bloc qui décrit le vendeur. Chaque balise correspond à une donnée de la norme EN 16931 :</p>
+      <pre><code>{`<ram:SellerTradeParty>
+  <ram:Name>Atelier Numérique SARL</ram:Name>
+  <ram:SpecifiedLegalOrganization>
+    <ram:ID schemeID="0002">552100554</ram:ID>   <!-- SIREN (BT-30) -->
+  </ram:SpecifiedLegalOrganization>
+  <ram:PostalTradeAddress>
+    <ram:PostcodeCode>69003</ram:PostcodeCode>
+    <ram:LineOne>12 rue des Lilas</ram:LineOne>
+    <ram:CityName>Lyon</ram:CityName>
+    <ram:CountryID>FR</ram:CountryID>
+  </ram:PostalTradeAddress>
+  <ram:SpecifiedTaxRegistration>
+    <ram:ID schemeID="VA">FR40552100554</ram:ID> <!-- TVA (BT-31) -->
+  </ram:SpecifiedTaxRegistration>
+</ram:SellerTradeParty>`}</code></pre>
+      <p>
+        Le <code>schemeID="0002"</code> indique que l’identifiant est un SIREN. C’est ce genre de détail qui fait qu’un fichier
+        est accepté ou non par une plateforme agréée.
+      </p>
+    </article>
+
+    <Faq items={faq} />
+
+    <section class="section">
+      <h2>Les autres outils</h2>
+      <ToolCards exclude="/lire-facture-factur-x/" />
+    </section>
+  </div>
+</Base>

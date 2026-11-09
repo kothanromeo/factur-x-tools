@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import { SITE, breadcrumbSchema } from '../../site';
+
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'À propos', path: '/a-propos/' },
+];
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author,
+  url: SITE.authorUrl,
+  sameAs: [SITE.authorUrl, SITE.linkedin].filter(Boolean),
+  jobTitle: 'Développeur',
+};
+---
+<Base
+  title="À propos du projet"
+  description="Factur-X Tools est un projet open source de Roméo Kothan : des outils gratuits pour lire, valider et créer des factures Factur-X sans envoyer de fichier sur un serveur."
+  schema={[person, breadcrumbSchema(Astro.site!, crumbs)]}
+>
+  <Crumbs items={crumbs} />
+  <article class="wrap narrow prose" style="padding-top:1.5rem">
+    <h1>À propos</h1>
+    <p>
+      Je m’appelle {SITE.author}, je suis développeur. J’ai construit ce site parce que la réforme de la facture électronique
+      oblige des millions d’entreprises à manipuler un format que presque personne ne sait ouvrir, et que les outils gratuits que j’ai trouvés
+      demandaient soit un compte, soit d’envoyer ses factures sur un serveur inconnu.
+    </p>
+    <h2>Les principes</h2>
+    <ul>
+      <li><strong>Rien ne sort de votre navigateur.</strong> Le site est un ensemble de fichiers statiques. Il n’y a pas de serveur d’application, pas de base de données, pas de traceur publicitaire.</li>
+      <li><strong>Le code est public.</strong> Il est publié sous licence MIT : vous pouvez le lire, le modifier, l’héberger chez vous.</li>
+      <li><strong>Les contrôles sont expliqués.</strong> Chaque vérification renvoie à la règle de la norme EN 16931 dont elle découle.</li>
+      <li><strong>Pas de promesse excessive.</strong> L’outil ne remplace ni le validateur officiel de votre plateforme agréée, ni l’avis d’un expert-comptable.</li>
+    </ul>
+    <h2>Sous le capot</h2>
+    <p>
+      Le site est généré avec Astro. La lecture et l’écriture des PDF utilisent <a href="https://pdf-lib.js.org/" rel="noopener">pdf-lib</a> ;
+      le XML est analysé avec le parseur natif du navigateur. Le profil de couleur ICC exigé par PDF/A est fabriqué à la volée par le code
+      plutôt que copié depuis un fichier binaire. Les fichiers produits sont testés automatiquement à chaque modification, et leur XML
+      a été vérifié avec le schéma XSD officiel Factur-X.
+    </p>
+    <h2>Contribuer, signaler un problème</h2>
+    <p>
+      Un fichier mal lu, une règle qui manque, une erreur dans un guide ? Ouvrez une <a href={`${SITE.repo}/issues`} rel="noopener">issue sur GitHub</a>.
+      Si votre facture contient des données réelles, retirez-les avant de la partager.
+    </p>
+    {SITE.linkedin && <p>Vous pouvez aussi me retrouver sur <a href={SITE.linkedin} rel="me noopener">LinkedIn</a>.</p>}
+  </article>
+</Base>

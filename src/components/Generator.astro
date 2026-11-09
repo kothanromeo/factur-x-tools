@@ -1,0 +1,129 @@
+---
+const units = [
+  ['C62', 'unité'], ['HUR', 'heure'], ['DAY', 'jour'], ['MON', 'mois'], ['ANN', 'an'],
+  ['LS', 'forfait'], ['H87', 'pièce'], ['KGM', 'kg'], ['MTR', 'mètre'], ['MTK', 'm²'], ['LTR', 'litre'],
+];
+const rates = ['20', '10', '5.5', '2.1', '0'];
+---
+<form class="generator" data-generator novalidate>
+  <fieldset>
+    <legend>Votre entreprise (vendeur)</legend>
+    <div class="fields">
+      <div class="wide"><label for="s-name">Raison sociale ou nom</label><input id="s-name" name="s.name" required autocomplete="organization" /></div>
+      <div><label for="s-siren">SIREN</label><input id="s-siren" name="s.siren" required inputmode="numeric" pattern="\d{3}\s?\d{3}\s?\d{3}" placeholder="123 456 789" /><p class="hint">9 chiffres</p></div>
+      <div><label for="s-vat">N° de TVA intracommunautaire</label><input id="s-vat" name="s.vatId" placeholder="FR12345678901" /><p class="hint">Facultatif en franchise en base</p></div>
+      <div><label for="s-email">E-mail</label><input id="s-email" name="s.email" type="email" autocomplete="email" /></div>
+      <div class="wide"><label for="s-line1">Adresse</label><input id="s-line1" name="s.line1" autocomplete="address-line1" /></div>
+      <div><label for="s-postcode">Code postal</label><input id="s-postcode" name="s.postcode" autocomplete="postal-code" /></div>
+      <div><label for="s-city">Ville</label><input id="s-city" name="s.city" autocomplete="address-level2" /></div>
+      <div><label for="s-country">Pays (code)</label><input id="s-country" name="s.country" value="FR" maxlength="2" required /></div>
+    </div>
+    <label class="choice" style="margin-top:.8rem"><input type="checkbox" name="remember" checked /> Mémoriser ces informations dans ce navigateur</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Votre client (acheteur)</legend>
+    <div class="fields">
+      <div class="wide"><label for="b-name">Raison sociale ou nom</label><input id="b-name" name="b.name" required /></div>
+      <div><label for="b-siren">SIREN du client</label><input id="b-siren" name="b.siren" inputmode="numeric" pattern="\d{3}\s?\d{3}\s?\d{3}" placeholder="987 654 321" /><p class="hint">Obligatoire pour un client professionnel français</p></div>
+      <div><label for="b-vat">N° de TVA du client</label><input id="b-vat" name="b.vatId" /></div>
+      <div class="wide"><label for="b-line1">Adresse</label><input id="b-line1" name="b.line1" /></div>
+      <div><label for="b-postcode">Code postal</label><input id="b-postcode" name="b.postcode" /></div>
+      <div><label for="b-city">Ville</label><input id="b-city" name="b.city" /></div>
+      <div><label for="b-country">Pays (code)</label><input id="b-country" name="b.country" value="FR" maxlength="2" required /></div>
+    </div>
+    <label class="choice" style="margin-top:.8rem"><input type="checkbox" name="hasShipTo" data-toggle="shipto" /> L’adresse de livraison est différente de l’adresse du client</label>
+    <div class="fields" data-section="shipto" hidden style="margin-top:.6rem">
+      <div class="wide"><label for="d-line1">Adresse de livraison</label><input id="d-line1" name="d.line1" /></div>
+      <div><label for="d-postcode">Code postal</label><input id="d-postcode" name="d.postcode" /></div>
+      <div><label for="d-city">Ville</label><input id="d-city" name="d.city" /></div>
+      <div><label for="d-country">Pays</label><input id="d-country" name="d.country" value="FR" maxlength="2" /></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>La facture</legend>
+    <div class="fields">
+      <div><label for="f-number">Numéro</label><input id="f-number" name="number" required placeholder="F-2026-001" /></div>
+      <div><label for="f-type">Type</label>
+        <select id="f-type" name="typeCode">
+          <option value="380">Facture</option>
+          <option value="381">Avoir</option>
+          <option value="386">Facture d’acompte</option>
+          <option value="384">Facture rectificative</option>
+        </select></div>
+      <div><label for="f-date">Date d’émission</label><input id="f-date" name="issueDate" type="date" required /></div>
+      <div><label for="f-delivery">Date de livraison ou de prestation</label><input id="f-delivery" name="deliveryDate" type="date" /></div>
+      <div><label for="f-due">Date d’échéance</label><input id="f-due" name="dueDate" type="date" /></div>
+      <div><label for="f-cat">Catégorie d’opération</label>
+        <select id="f-cat" name="businessProcess">
+          <option value="S1">Prestation de services</option>
+          <option value="B1">Livraison de biens</option>
+          <option value="M1">Mixte (biens et services)</option>
+        </select><p class="hint">Mention obligatoire depuis 2026 (cadre BT-23)</p></div>
+      <div><label for="f-order">N° de bon de commande</label><input id="f-order" name="orderReference" /></div>
+      <div><label for="f-buyerref">Référence client</label><input id="f-buyerref" name="buyerReference" /></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>TVA</legend>
+    <label class="choice"><input type="radio" name="vatRegime" value="normal" checked /> Je facture la TVA</label>
+    <label class="choice"><input type="radio" name="vatRegime" value="franchise" /> Franchise en base (micro-entreprise) : « TVA non applicable, art. 293 B du CGI »</label>
+    <label class="choice" data-debits><input type="checkbox" name="vatOnDebits" /> J’ai opté pour le paiement de la TVA d’après les débits</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Lignes</legend>
+    <div class="lines" data-lines></div>
+    <button type="button" class="btn secondary" style="margin-top:.8rem" data-add-line>+ Ajouter une ligne</button>
+    <template data-line-template>
+      <div class="line-row">
+        <label>Désignation<input name="l.name" required /></label>
+        <label>Quantité<input name="l.quantity" type="number" step="any" min="0" value="1" required /></label>
+        <label>Unité<select name="l.unitCode">{units.map(([v, l]) => <option value={v}>{l}</option>)}</select></label>
+        <label>Prix unitaire HT<input name="l.unitPrice" type="number" step="0.01" required /></label>
+        <label data-rate>TVA %<select name="l.vatRate">{rates.map((r) => <option value={r}>{r.replace('.', ',')} %</option>)}</select></label>
+        <button type="button" class="remove" aria-label="Supprimer la ligne" data-remove>×</button>
+      </div>
+    </template>
+  </fieldset>
+
+  <fieldset>
+    <legend>Paiement et mentions</legend>
+    <div class="fields">
+      <div class="wide"><label for="p-terms">Conditions de paiement</label><input id="p-terms" name="paymentTerms" value="Paiement à 30 jours par virement." /></div>
+      <div><label for="p-iban">IBAN</label><input id="p-iban" name="iban" autocomplete="off" /></div>
+      <div><label for="p-bic">BIC</label><input id="p-bic" name="bic" autocomplete="off" /></div>
+      <div class="wide"><label for="n-pmt">Indemnité forfaitaire de recouvrement</label><input id="n-pmt" name="n.PMT" value="Indemnité forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 €." /></div>
+      <div class="wide"><label for="n-pmd">Pénalités de retard</label><input id="n-pmd" name="n.PMD" value="En cas de retard de paiement, pénalités au taux égal à trois fois le taux d’intérêt légal." /></div>
+      <div class="wide"><label for="n-aab">Escompte</label><input id="n-aab" name="n.AAB" value="Pas d’escompte pour paiement anticipé." /></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Le PDF</legend>
+    <label class="choice"><input type="radio" name="pdfMode" value="generate" checked /> Générer un PDF de facture propre à partir de ces informations</label>
+    <label class="choice"><input type="radio" name="pdfMode" value="own" /> Utiliser mon propre PDF (celui de mon logiciel, Word, Excel…) et y intégrer le XML</label>
+    <div data-section="own" hidden style="margin-top:.6rem">
+      <label for="own-pdf">Votre facture PDF</label>
+      <input id="own-pdf" type="file" accept="application/pdf,.pdf" data-own-pdf />
+      <p class="hint">Les montants du formulaire doivent correspondre exactement à ceux de votre PDF : c’est le XML qui fait foi.</p>
+    </div>
+  </fieldset>
+
+  <div class="summary-box">
+    <div class="t" data-totals>Total HT <strong>0,00 €</strong></div>
+    <div class="btn-row">
+      <button type="button" class="btn ghost" data-xml-only>XML seul</button>
+      <button type="submit" class="btn">Générer la facture Factur-X</button>
+    </div>
+  </div>
+  <p class="privacy">🔒 Tout est calculé dans votre navigateur. Aucune donnée n’est transmise.</p>
+  <div class="result" data-gen-result hidden aria-live="polite"></div>
+</form>
+
+<script>
+  import { mountGenerator } from '../scripts/generator';
+  document.querySelectorAll<HTMLFormElement>('[data-generator]').forEach(mountGenerator);
+</script>

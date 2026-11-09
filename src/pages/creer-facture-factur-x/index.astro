@@ -1,0 +1,106 @@
+---
+import Base from '../../layouts/Base.astro';
+import Generator from '../../components/Generator.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Créer une facture Factur-X', path: '/creer-facture-factur-x/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Puis-je convertir mon PDF existant en Factur-X ?',
+    a: '<p>Oui : choisissez « Utiliser mon propre PDF » en bas du formulaire. L’outil ajoute le XML, les métadonnées PDF/A-3 et un profil de couleur à votre fichier, sans toucher à son apparence. Il faut en revanche saisir les données de la facture dans le formulaire : l’outil ne « lit » pas le texte de votre PDF, et c’est volontaire, car une reconnaissance automatique se tromperait un jour sur un montant.</p>',
+  },
+  {
+    q: 'Le fichier généré est-il conforme PDF/A-3 ?',
+    a: '<p>Quand l’outil génère lui-même le PDF, il incorpore la police, les métadonnées XMP, l’identifiant de fichier et le profil de couleur exigés par PDF/A-3. Quand vous fournissez votre propre PDF, la conformité dépend aussi de ce fichier (polices incorporées, transparence) ; l’outil vous prévient s’il n’était pas déjà PDF/A. Le plus fiable est d’exporter votre facture en « PDF/A » depuis Word ou LibreOffice avant de la convertir.</p>',
+  },
+  {
+    q: 'Est-ce suffisant pour respecter la réforme de 2026-2027 ?',
+    a: '<p>Le fichier respecte le format. Mais la réforme impose aussi un <em>canal</em> : à partir de l’obligation d’émission, la facture doit transiter par une plateforme agréée (PA), pas par un simple e-mail. Cet outil vous sert à produire ou vérifier le fichier ; l’envoi officiel passe par votre plateforme.</p>',
+  },
+  {
+    q: 'Je suis micro-entrepreneur sans TVA, comment remplir ?',
+    a: '<p>Cochez « Franchise en base ». L’outil code alors les lignes en catégorie <code>E</code>, taux 0, avec le motif « TVA non applicable, art. 293 B du CGI », et utilise votre SIREN comme identifiant fiscal si vous n’avez pas de numéro de TVA. <a href="' + href('/guides/facture-electronique-auto-entrepreneur/') + '">Le guide dédié aux auto-entrepreneurs</a> explique le reste.</p>',
+  },
+  {
+    q: 'Mes informations sont-elles conservées ?',
+    a: '<p>Seules les informations de votre entreprise (et votre IBAN) sont mémorisées, dans le stockage local de <em>votre</em> navigateur, pour vous éviter de les retaper. Décochez « Mémoriser » pour les effacer. Les données de vos clients et de vos factures ne sont jamais conservées.</p>',
+  },
+];
+---
+<Base
+  title="Créer une facture Factur-X gratuite (ou convertir un PDF en Factur-X)"
+  description="Générez une facture Factur-X EN 16931 gratuitement : remplissez le formulaire ou intégrez le XML dans votre propre PDF. SIREN, catégorie d’opération, franchise en base… Sans compte, dans le navigateur."
+  schema={[
+    toolSchema(site, { name: 'Générateur Factur-X', path: '/creer-facture-factur-x/', description: 'Crée une facture Factur-X (PDF/A-3 + XML CII EN 16931) dans le navigateur.' }),
+    breadcrumbSchema(site, crumbs),
+    faqSchema(faq),
+  ]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Créer une facture Factur-X</h1>
+    <p class="lead">
+      Remplissez le formulaire : vous obtenez un PDF lisible par votre client <em>et</em> le XML structuré qu’attend son logiciel comptable,
+      au profil EN 16931. Vous avez déjà votre facture en PDF ? Gardez-la, l’outil y ajoutera le XML.
+    </p>
+  </section>
+
+  <div class="wrap">
+    <Generator />
+
+    <article class="prose narrow section">
+      <h2>Ce que contient le fichier généré</h2>
+      <ul>
+        <li>un PDF au format <strong>PDF/A-3B</strong>, avec la police incorporée, des métadonnées XMP et un profil de couleur sRGB ;</li>
+        <li>en pièce jointe, un fichier <code>factur-x.xml</code> au format CII, profil <strong>EN 16931</strong> (appelé « COMFORT » en ZUGFeRD) ;</li>
+        <li>les mentions attendues par la réforme : SIREN des deux parties, cadre de facturation (services, biens ou mixte), adresse de livraison si elle diffère, option pour la TVA sur les débits ;</li>
+        <li>les notes codées <code>PMT</code>, <code>PMD</code> et <code>AAB</code> pour l’indemnité de 40 €, les pénalités et l’escompte.</li>
+      </ul>
+      <p>
+        Une fois le fichier généré, il est relu par le validateur du site et le résultat s’affiche juste en dessous.
+        Vous pouvez aussi le déposer plus tard sur la page <a href={href('/valider-factur-x/')}>valider un fichier Factur-X</a>.
+      </p>
+
+      <h2>Pourquoi le profil EN 16931 ?</h2>
+      <p>
+        Factur-X propose cinq profils, du plus léger (MINIMUM) au plus complet (EXTENDED). EN 16931 correspond exactement à la norme
+        européenne : c’est celui que toutes les plateformes savent traiter, et il contient tout ce qu’une PME ou un indépendant met sur une facture.
+        EXTENDED n’apporte quelque chose que pour des cas particuliers (facturation de chantier, sous-totaux par groupe de lignes…).
+        Les différences sont détaillées dans <a href={href('/guides/profils-factur-x/')}>le comparatif des profils</a>.
+      </p>
+
+      <h2>Les champs qui posent question</h2>
+      <h3>Catégorie d’opération</h3>
+      <p>
+        Nouvelle mention depuis septembre 2026. Indiquez si la facture porte sur des <strong>prestations de services</strong>,
+        des <strong>livraisons de biens</strong>, ou les deux. Dans le XML, elle est portée par le « cadre de facturation »
+        (<code>S1</code>, <code>B1</code> ou <code>M1</code>).
+      </p>
+      <h3>TVA sur les débits</h3>
+      <p>
+        Pour les prestations de services, la TVA est normalement due à l’encaissement. Si vous avez opté pour la payer dès la facturation
+        (option « sur les débits »), cochez la case : la mention apparaît sur le PDF et le code d’exigibilité est renseigné dans le XML.
+        Si vous ne savez pas, c’est probablement que vous n’avez pas exercé l’option : laissez décoché.
+      </p>
+      <h3>Le SIREN du client</h3>
+      <p>
+        Il est désormais obligatoire quand le client est une entreprise française. Pour le trouver, l’annuaire des entreprises
+        de l’État (annuaire-entreprises.data.gouv.fr) suffit. Pour un client particulier ou étranger, laissez le champ vide.
+      </p>
+    </article>
+
+    <Faq items={faq} />
+
+    <section class="section">
+      <h2>Les autres outils</h2>
+      <ToolCards exclude="/creer-facture-factur-x/" />
+    </section>
+  </div>
+</Base>
