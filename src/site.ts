@@ -9,7 +9,10 @@ export const SITE = {
   portfolio: 'https://kothanromeo.dev/',
   repo: 'https://github.com/kothanromeo/factur-x-tools',
   /** Autres outils du même auteur, liés depuis le pied de page. */
-  siblings: [{ name: 'CFONB & camt Tools', url: 'https://cfonb-camt-tools.kothanromeo.dev/', text: 'Convertir un relevé bancaire CFONB 120 ou camt.053 en Excel' }],
+  siblings: [
+    { name: 'CFONB & camt Tools', url: 'https://cfonb-camt-tools.kothanromeo.dev/', text: 'Convertir un relevé bancaire CFONB 120 ou camt.053 en Excel' },
+    { name: 'FEC Tools', url: 'https://fec-tools.kothanromeo.dev/', text: 'Lire et vérifier un Fichier des Écritures Comptables' },
+  ],
   locale: 'fr_FR',
   lang: 'fr',
 };
