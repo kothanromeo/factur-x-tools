@@ -4,7 +4,7 @@
 
 **Lire, valider et créer des factures électroniques Factur-X, sans rien envoyer à un serveur.**
 
-[**→ Ouvrir l'outil**](https://kothanromeo.github.io/factur-x-tools/) · [Guides](https://kothanromeo.github.io/factur-x-tools/guides/) · [Signaler un problème](https://github.com/kothanromeo/factur-x-tools/issues)
+[**→ Ouvrir l'outil**](https://factur-x-tools.kothanromeo.dev/) · [Guides](https://factur-x-tools.kothanromeo.dev/guides/) · [Signaler un problème](https://github.com/kothanromeo/factur-x-tools/issues)
 
 ![Tests](https://github.com/kothanromeo/factur-x-tools/actions/workflows/ci.yml/badge.svg)
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
@@ -22,9 +22,9 @@ Le problème : la plupart des lecteurs PDF n'affichent pas le XML, et les outils
 
 | Outil | Ce qu'il fait |
 |---|---|
-| **[Lecteur](https://kothanromeo.github.io/factur-x-tools/lire-facture-factur-x/)** | Extrait le `factur-x.xml` d'un PDF (ou lit un XML CII seul) et l'affiche comme une facture : parties, lignes, TVA, totaux, paiement, notes. |
-| **[Validateur](https://kothanromeo.github.io/factur-x-tools/valider-factur-x/)** | Une quarantaine de contrôles : conteneur PDF/A-3 et XMP, règles métier EN 16931 (BR-xx, BR-CO-xx), recalcul des totaux et de la TVA, SIREN (clé de Luhn), nouvelles mentions françaises de 2026. |
-| **[Générateur](https://kothanromeo.github.io/factur-x-tools/creer-facture-factur-x/)** | Produit un Factur-X **EN 16931** à partir d'un formulaire : soit un PDF généré (police incorporée), soit **votre propre PDF** auquel on ajoute le XML, les métadonnées et l'OutputIntent. Gère la franchise en base (art. 293 B du CGI) et la TVA sur les débits. |
+| **[Lecteur](https://factur-x-tools.kothanromeo.dev/lire-facture-factur-x/)** | Extrait le `factur-x.xml` d'un PDF (ou lit un XML CII seul) et l'affiche comme une facture : parties, lignes, TVA, totaux, paiement, notes. |
+| **[Validateur](https://factur-x-tools.kothanromeo.dev/valider-factur-x/)** | Une quarantaine de contrôles : conteneur PDF/A-3 et XMP, règles métier EN 16931 (BR-xx, BR-CO-xx), recalcul des totaux et de la TVA, SIREN (clé de Luhn), nouvelles mentions françaises de 2026. |
+| **[Générateur](https://factur-x-tools.kothanromeo.dev/creer-facture-factur-x/)** | Produit un Factur-X **EN 16931** à partir d'un formulaire : soit un PDF généré (police incorporée), soit **votre propre PDF** auquel on ajoute le XML, les métadonnées et l'OutputIntent. Gère la franchise en base (art. 293 B du CGI) et la TVA sur les débits. |
 
 Formats reconnus : Factur-X 1.0x, ZUGFeRD 2.x, XRechnung (CII). Profils MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED.
 
@@ -56,15 +56,15 @@ src/lib/facturx/
 
 ```bash
 npm install
-npm run dev        # http://localhost:4321/factur-x-tools/
+npm run dev        # http://localhost:4321/
 npm test           # tests Vitest
 npm run build      # site statique dans dist/
 ```
 
-Déployer sur un nom de domaine plutôt que sur GitHub Pages :
+Le site est publié sur GitHub Pages avec le domaine `factur-x-tools.kothanromeo.dev`. Pour le servir ailleurs, par exemple dans un sous-dossier :
 
 ```bash
-SITE_URL=https://mon-domaine.fr SITE_BASE=/ npm run build
+SITE_URL=https://exemple.fr SITE_BASE=/factur-x-tools npm run build
 ```
 
 L'image de partage (`public/og.png`) se régénère avec `node scripts/og-image.mjs`.

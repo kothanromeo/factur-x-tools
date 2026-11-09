@@ -3,10 +3,10 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 
-// Par défaut : GitHub Pages (https://kothanromeo.github.io/factur-x-tools/).
-// Avec un nom de domaine : SITE_URL=https://mondomaine.fr SITE_BASE=/ npm run build
-const site = process.env.SITE_URL ?? 'https://kothanromeo.github.io';
-const base = process.env.SITE_BASE ?? '/factur-x-tools';
+// Par défaut : https://factur-x-tools.kothanromeo.dev (GitHub Pages + domaine personnalisé).
+// Pour un autre hébergement : SITE_URL=https://exemple.fr SITE_BASE=/sous-dossier npm run build
+const site = process.env.SITE_URL ?? 'https://factur-x-tools.kothanromeo.dev';
+const base = process.env.SITE_BASE ?? '/';
 
 /**
  * Dans les articles Markdown, on écrit les liens internes sans la base (« /valider-factur-x/ »).
