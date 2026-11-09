@@ -2,6 +2,7 @@
 title: "Profils Factur-X : MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED, lequel choisir ?"
 seoTitle: "Profils Factur-X (MINIMUM, BASIC, EN 16931, EXTENDED) : lequel choisir ?"
 description: "Les 5 profils Factur-X comparés : ce que chacun contient, lesquels la réforme accepte, et pourquoi EN 16931 est le bon choix par défaut."
+keywords: ["profils factur-x", "profil en 16931", "factur-x minimum", "factur-x basic wl", "factur-x basic", "factur-x extended", "factur-x comfort", "quel profil factur-x choisir", "factur-x 1.08", "zugferd profils", "facture électronique"]
 published: 2026-11-09
 faq:
   - q: "Comment savoir quel profil utilise une facture ?"

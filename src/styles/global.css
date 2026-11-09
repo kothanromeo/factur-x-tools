@@ -285,3 +285,12 @@ legend { font-weight: 700; padding: 0 0.4rem; }
 .thanks .close:hover { color: var(--ink); }
 .thanks .more { font-size: 0.85rem; color: var(--ink-2); display: block; margin-top: 0.2rem; }
 .thanks .more a { color: inherit; }
+
+/* Barre fine au-dessus de l'en-tête */
+.top-strip { background: linear-gradient(90deg, #0b3a57, var(--linkedin)); color: #fff; font-size: 0.86rem; }
+.top-strip .wrap { display: flex; align-items: center; justify-content: center; gap: 0.4rem 1rem; flex-wrap: wrap; min-height: 38px; padding-top: 0.3rem; padding-bottom: 0.3rem; text-align: center; }
+.top-strip-text { opacity: 0.95; }
+.top-strip-cta { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--linkedin); background: #fff; font-weight: 700; text-decoration: none; padding: 0.22rem 0.75rem; border-radius: 999px; font-size: 0.82rem; white-space: nowrap; }
+.top-strip-cta:hover { background: #e8f1fb; text-decoration: none; }
+.top-strip-cta .ic { width: 1em; height: 1em; }
+@media (max-width: 520px) { .top-strip .hide-sm { display: none; } .top-strip .wrap { gap: 0.3rem 0.6rem; } }

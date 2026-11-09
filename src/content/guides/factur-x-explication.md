@@ -2,6 +2,7 @@
 title: "Factur-X, c’est quoi exactement ? Ce qu’il y a dans le fichier"
 seoTitle: "Factur-X : définition simple et ce que contient vraiment le fichier"
 description: "Factur-X expliqué sans jargon : un PDF lisible, un XML caché, PDF/A-3, CII et profils. Ce qui le distingue d’un PDF classique."
+keywords: ["factur-x c'est quoi", "factur-x définition", "format factur-x", "factur-x explication", "factur-x pdf xml", "factur-x pdf/a-3", "xml cii", "factur-x vs zugferd", "fichier factur-x.xml", "facture électronique hybride", "facture électronique"]
 published: 2026-11-09
 faq:
   - q: "Factur-X est-il obligatoire ?"

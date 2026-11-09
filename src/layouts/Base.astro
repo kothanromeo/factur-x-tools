@@ -13,9 +13,11 @@ interface Props {
   noindex?: boolean;
   published?: string;
   modified?: string;
+  /** Mots-clés de la page (meta keywords), du plus précis au plus général. */
+  keywords?: string[];
 }
 
-const { title, description, schema = [], ogType = 'website', noindex = false, published, modified } = Astro.props;
+const { title, description, schema = [], ogType = 'website', noindex = false, published, modified, keywords = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const ogImage = new URL(href('/og.png'), Astro.site).toString();
 const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
@@ -35,6 +37,7 @@ const websiteSchema = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="author" content={SITE.author} />
@@ -60,6 +63,14 @@ const websiteSchema = {
   </head>
   <body>
     <a class="skip" href="#contenu">Aller au contenu</a>
+    <div class="top-strip">
+      <div class="wrap">
+        <span class="top-strip-text">Outil 100 % gratuit, créé par <strong>{SITE.author}</strong><span class="hide-sm">, développeur</span></span>
+        <a class="top-strip-cta" href={SITE.linkedin} rel="me noopener" target="_blank">
+          <Fragment set:html={ICONS.linkedin} />Suivre sur LinkedIn
+        </a>
+      </div>
+    </div>
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href={href('/')} aria-label={`${SITE.name}, accueil`}>

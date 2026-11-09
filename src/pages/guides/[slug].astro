@@ -45,6 +45,7 @@ if (post.data.faq.length) schema.push(faqSchema(post.data.faq));
   title={post.data.seoTitle ?? post.data.title}
   description={post.data.description}
   ogType="article"
+  keywords={post.data.keywords}
   published={post.data.published.toISOString()}
   modified={updated.toISOString()}
   schema={schema}

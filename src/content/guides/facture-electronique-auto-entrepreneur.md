@@ -2,6 +2,7 @@
 title: "Facture électronique et auto-entrepreneur : ce qui change entre 2026 et 2027"
 seoTitle: "Facture électronique auto-entrepreneur : obligations 2026-2027 et Factur-X"
 description: "Micro-entrepreneur : réception depuis septembre 2026, émission en septembre 2027. Ce qu’il faut faire maintenant, et comment coder la franchise en base de TVA."
+keywords: ["facture électronique auto-entrepreneur", "facture électronique micro-entreprise", "facturation électronique 2027", "auto-entrepreneur 2026 facture", "franchise en base tva facture électronique", "art 293 b cgi facture électronique", "plateforme agréée auto-entrepreneur", "e-reporting auto-entrepreneur", "factur-x auto-entrepreneur", "facture électronique obligatoire"]
 published: 2026-11-09
 faq:
   - q: "Je ne facture que des particuliers, suis-je concerné ?"

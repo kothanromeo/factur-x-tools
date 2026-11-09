@@ -2,6 +2,7 @@
 title: "Les 4 nouvelles mentions obligatoires sur les factures (2026) et où les mettre dans Factur-X"
 seoTitle: "Nouvelles mentions obligatoires facture 2026 : SIREN client, livraison, catégorie, TVA débits"
 description: "SIREN du client, adresse de livraison, catégorie d’opération, TVA sur les débits : les 4 mentions de la réforme et le champ exact du XML Factur-X."
+keywords: ["mentions obligatoires facture 2026", "nouvelles mentions obligatoires facture", "siren client facture", "adresse de livraison facture", "catégorie d'opération facture", "option tva sur les débits", "cadre de facturation bt-23", "factur-x mentions obligatoires", "facture électronique mentions", "réforme facture électronique"]
 published: 2026-11-09
 faq:
   - q: "Ces mentions sont-elles obligatoires sur une facture à un particulier ?"
