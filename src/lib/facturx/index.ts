@@ -5,3 +5,5 @@ export * from './build';
 export * from './validate';
 export { inspectPdf, checkPdf, embedFacturX, PdfError } from './pdf';
 export type { PdfInspection, Attachment, EmbedResult } from './pdf';
+export { readUbl } from './ubl';
+export { buildUbl } from './ubl-build';

@@ -22,17 +22,19 @@ Le problème : la plupart des lecteurs PDF n'affichent pas le XML, et les outils
 
 | Outil | Ce qu'il fait |
 |---|---|
-| **[Lecteur](https://factur-x-tools.kothanromeo.dev/lire-facture-factur-x/)** | Extrait le `factur-x.xml` d'un PDF (ou lit un XML CII seul) et l'affiche comme une facture : parties, lignes, TVA, totaux, paiement, notes. |
+| **[Lecteur](https://factur-x-tools.kothanromeo.dev/lire-facture-factur-x/)** | Extrait le `factur-x.xml` d'un PDF, ou lit un XML CII ou **UBL 2.1** (Invoice, CreditNote, Peppol, XRechnung) et l'affiche comme une facture : parties, lignes, TVA, totaux, paiement, notes. |
 | **[Validateur](https://factur-x-tools.kothanromeo.dev/valider-factur-x/)** | Une quarantaine de contrôles : conteneur PDF/A-3 et XMP, règles métier EN 16931 (BR-xx, BR-CO-xx), recalcul des totaux et de la TVA, SIREN (clé de Luhn), nouvelles mentions françaises de 2026. |
-| **[Générateur](https://factur-x-tools.kothanromeo.dev/creer-facture-factur-x/)** | Produit un Factur-X **EN 16931** à partir d'un formulaire : soit un PDF généré (police incorporée), soit **votre propre PDF** auquel on ajoute le XML, les métadonnées et l'OutputIntent. Gère la franchise en base (art. 293 B du CGI) et la TVA sur les débits. |
+| **[Générateur](https://factur-x-tools.kothanromeo.dev/creer-facture-factur-x/)** | Produit un Factur-X **EN 16931** à partir d'un formulaire : soit un PDF généré (police incorporée), soit **votre propre PDF** auquel on ajoute le XML, les métadonnées et l'OutputIntent. Gère la franchise en base (art. 293 B du CGI) et la TVA sur les débits. Export du même contenu en **XML UBL 2.1**. |
 
-Formats reconnus : Factur-X 1.0x, ZUGFeRD 2.x, XRechnung (CII). Profils MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED.
+Formats reconnus : Factur-X 1.0x, ZUGFeRD 2.x, XRechnung, UBL 2.1 (dont Peppol BIS 3). Le UBL généré est validé contre les schémas XSD officiels UBL 2.1 d'OASIS. Profils MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED.
 
 ## Comment ça marche
 
 ```
 src/lib/facturx/
 ├── parse.ts      XML CII → objet Invoice (navigation par nom local, indépendante des préfixes)
+├── ubl.ts        XML UBL 2.1 → même objet Invoice
+├── ubl-build.ts  Formulaire → XML UBL 2.1
 ├── build.ts      Formulaire → XML CII EN 16931 (ordre des éléments conforme au XSD)
 ├── validate.ts   Règles EN 16931 + exigences françaises (SIREN, BT-23, notes PMT/PMD/AAB)
 ├── pdf.ts        Lecture/écriture des pièces jointes (/EmbeddedFiles + /AF), XMP, OutputIntent
@@ -75,7 +77,6 @@ Les issues et pull requests sont les bienvenues, en particulier :
 
 - des fichiers Factur-X réels qui sont mal lus (**anonymisez-les** avant de les partager) ;
 - des règles EN 16931 supplémentaires dans `validate.ts` ;
-- la lecture des factures UBL.
 
 ## Licence
 

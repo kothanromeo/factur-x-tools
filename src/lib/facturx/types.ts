@@ -82,6 +82,8 @@ export interface Totals {
 
 /** Représentation lisible d'une facture CII (Factur-X / ZUGFeRD). */
 export interface Invoice {
+  /** Syntaxe XML de la facture. */
+  syntax?: 'CII' | 'UBL';
   profile: ProfileId;
   guidelineId?: string;
   /** BT-23, « cadre de facturation » en France (S1, B1, M1…). */

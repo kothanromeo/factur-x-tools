@@ -157,6 +157,14 @@ export function mountGenerator(form: HTMLFormElement) {
     download(buildXml(input), 'factur-x.xml', 'application/xml');
   });
 
+  form.querySelector('[data-ubl-only]')!.addEventListener('click', async () => {
+    const input = check();
+    if (!input) return;
+    save(form);
+    const { buildUbl } = await import('../lib/facturx/ubl-build');
+    download(buildUbl(input), `facture-${input.number.replace(/[^\w.-]+/g, '_')}-ubl.xml`, 'application/xml');
+  });
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const input = check();

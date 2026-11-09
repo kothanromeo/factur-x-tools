@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import Analyzer from '../../components/Analyzer.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Lire une facture UBL', path: '/lire-facture-ubl/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Comment ouvrir un fichier de facture UBL ?',
+    a: '<p>Un fichier UBL est un XML : un navigateur ou un éditeur de texte l’ouvre, mais on y voit des centaines de balises. Déposez-le dans l’outil ci-dessus : il est converti en facture lisible, avec les parties, les lignes, la TVA et le paiement, puis contrôlé.</p>',
+  },
+  {
+    q: 'Les factures Peppol et XRechnung sont-elles lues ?',
+    a: '<p>Oui, si elles sont au format UBL : Peppol BIS Billing 3.0 et XRechnung en UBL sont des déclinaisons de la norme EN 16931. Le profil est reconnu à partir de l’identifiant de spécification (CustomizationID).</p>',
+  },
+  {
+    q: 'Et les avoirs ?',
+    a: '<p>Les avoirs UBL utilisent un document distinct, <code>CreditNote</code>, avec des noms d’éléments légèrement différents (CreditNoteLine, CreditedQuantity). Ils sont reconnus automatiquement.</p>',
+  },
+  {
+    q: 'Puis-je créer une facture UBL ?',
+    a: '<p>Oui : le <a href="' + href('/creer-facture-factur-x/') + '">générateur</a> propose un bouton « XML UBL » qui produit la même facture au format UBL 2.1, en plus du PDF Factur-X.</p>',
+  },
+];
+---
+<Base
+  title="Lire une facture UBL en ligne : visualiseur et validateur gratuit"
+  description="Ouvrez une facture électronique UBL (XML) et lisez-la comme une facture : parties, lignes, TVA, paiement, contrôles EN 16931. Peppol et XRechnung acceptés. Sans envoi du fichier."
+  keywords={["lire facture ubl", "ouvrir facture ubl", "visualiser facture ubl", "facture ubl xml", "ubl 2.1 invoice", "lecteur ubl en ligne", "valider facture ubl", "facture peppol", "peppol bis 3", "xrechnung ubl", "creditnote ubl", "facture électronique xml", "ubl en16931"]}
+  schema={[
+    toolSchema(site, { name: 'Lecteur de factures UBL', path: '/lire-facture-ubl/', description: 'Affiche et contrôle une facture électronique au format UBL 2.1.' }),
+    breadcrumbSchema(site, crumbs),
+    faqSchema(faq),
+  ]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Lire une facture UBL</h1>
+    <p class="lead">
+      UBL est l’un des trois formats de la facture électronique en France, avec CII et Factur-X. C’est un fichier XML,
+      sans PDF. Déposez-le ici pour le lire comme une facture et vérifier sa cohérence.
+    </p>
+  </section>
+
+  <div class="wrap">
+    <Analyzer sample="ubl" label="Déposez votre facture UBL (fichier .xml)" />
+
+    <article class="prose narrow section">
+      <h2>Ce qu’est une facture UBL</h2>
+      <p>
+        UBL, pour <em>Universal Business Language</em>, est un standard XML publié par l’organisme OASIS. La norme européenne
+        EN 16931 l’a retenu comme l’une de ses deux syntaxes officielles, avec CII. C’est le format le plus répandu dans les réseaux
+        de facturation internationaux comme Peppol, et l’un des trois formats acceptés par la réforme française.
+      </p>
+      <p>
+        Contrairement à Factur-X, une facture UBL n’a pas de partie visuelle : c’est uniquement un fichier de données.
+        Le logiciel du destinataire la lit et l’intègre ; un humain, lui, a besoin d’un outil pour la consulter.
+      </p>
+
+      <h2>À quoi ressemble le fichier</h2>
+      <p>Voici le début d’une facture UBL, réduit à l’essentiel :</p>
+      <pre><code>{`<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" …>
+  <cbc:CustomizationID>urn:cen.eu:en16931:2017</cbc:CustomizationID>
+  <cbc:ProfileID>S1</cbc:ProfileID>
+  <cbc:ID>F-2026-0042</cbc:ID>
+  <cbc:IssueDate>2026-11-09</cbc:IssueDate>
+  <cbc:DueDate>2026-12-09</cbc:DueDate>
+  <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+  <cbc:Note>#PMT#Indemnité forfaitaire pour frais de recouvrement : 40 €.</cbc:Note>
+  <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+  <cac:AccountingSupplierParty>…</cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>…</cac:AccountingCustomerParty>
+  <cac:TaxTotal>…</cac:TaxTotal>
+  <cac:LegalMonetaryTotal>…</cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>…</cac:InvoiceLine>
+</Invoice>`}</code></pre>
+      <p>
+        Les éléments préfixés <code>cbc:</code> sont des valeurs simples (une date, un code, un montant) ; ceux préfixés <code>cac:</code>
+        sont des blocs qui en regroupent d’autres (une partie, une ligne, un total).
+      </p>
+
+      <h2>Les mêmes contrôles qu’en CII</h2>
+      <p>
+        L’outil convertit la facture UBL dans le même modèle que les factures CII et Factur-X, puis applique les mêmes vérifications :
+        règles de la norme EN 16931 (équilibre des totaux, TVA par taux, champs obligatoires) et attentes de la réforme française
+        (SIREN du vendeur et de l’acheteur, cadre de facturation, mentions de paiement).
+      </p>
+      <p>
+        Deux différences de syntaxe sont prises en compte. Les notes UBL portent leur code sujet en tête du texte
+        (<code>#PMT#…</code>), alors que le CII utilise une balise dédiée. Et le code d’exigibilité de la TVA (option sur les débits)
+        utilise la liste UNTDID 2005 en UBL (<code>3</code>) et la liste 2475 en CII (<code>5</code>).
+      </p>
+      <p>
+        Pour comprendre quand choisir UBL, CII ou Factur-X, lisez <a href={href('/guides/ubl-cii-factur-x-differences/')}>la comparaison des trois formats</a>.
+      </p>
+    </article>
+
+    <Faq items={faq} />
+
+    <section class="section">
+      <h2>Les autres outils</h2>
+      <ToolCards exclude="/lire-facture-ubl/" />
+    </section>
+  </div>
+</Base>

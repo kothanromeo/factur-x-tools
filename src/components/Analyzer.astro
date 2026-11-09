@@ -2,11 +2,13 @@
 interface Props {
   /** Onglet affiché en premier après l'analyse. */
   focus?: 'facture' | 'controles' | 'xml';
+  /** Exemple proposé : Factur-X (PDF) ou UBL (XML). */
+  sample?: 'facturx' | 'ubl';
   label?: string;
 }
-const { focus = 'facture', label = 'Déposez votre facture Factur-X (PDF) ou son fichier XML' } = Astro.props;
+const { focus = 'facture', label = 'Déposez votre facture Factur-X (PDF) ou son fichier XML', sample = 'facturx' } = Astro.props;
 ---
-<section class="analyzer" data-analyzer data-focus={focus} aria-label="Analyseur de facture Factur-X">
+<section class="analyzer" data-analyzer data-focus={focus} data-sample-kind={sample} aria-label="Analyseur de facture Factur-X">
   <div class="drop" data-drop>
     <p class="big">{label}</p>
     <p>Glissez-déposez le fichier ici, ou</p>

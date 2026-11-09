@@ -79,7 +79,7 @@ function banner(a: Analysis): string {
   if (!a.invoice) {
     return `<div class="banner err"><div><strong>Ce PDF n’est pas une facture Factur-X</strong><p>Il ne contient pas de fichier XML de facture. C’est un PDF classique : il n’a pas de valeur de facture électronique au sens de la réforme.${a.attachments?.length ? ` Pièces jointes trouvées : ${esc(a.attachments.join(', '))}.` : ''}</p></div></div>`;
   }
-  const title = `${esc(a.invoice.number ?? 'Facture')} · profil ${esc(a.invoice.profile)}`;
+  const title = `${esc(a.invoice.number ?? 'Facture')} · ${a.invoice.syntax === 'UBL' ? 'UBL · ' : ''}profil ${esc(a.invoice.profile)}`;
   if (s.errors) {
     return `<div class="banner err"><div><strong>${s.errors} erreur${s.errors > 1 ? 's' : ''}, ${s.warnings} avertissement${s.warnings > 1 ? 's' : ''}</strong><p>${title}. Le fichier sera probablement rejeté par une plateforme agréée. Le détail est dans l’onglet « Contrôles ».</p></div></div>`;
   }
@@ -163,13 +163,8 @@ export function renderAnalysis(root: HTMLElement, a: Analysis, focus: Tab, opts:
   out.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-export async function makeSamplePdf(): Promise<Uint8Array> {
-  const [{ buildXml, defaultFrenchNotes }, { renderInvoicePdf }, { embedFacturX }, { loadFonts }] = await Promise.all([
-    import('../lib/facturx/build'),
-    import('../lib/facturx/render'),
-    import('../lib/facturx/pdf'),
-    import('./fonts'),
-  ]);
+async function sampleInput() {
+  const { defaultFrenchNotes } = await import('../lib/facturx/build');
   const today = new Date().toISOString().slice(0, 10);
   const due = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
   const input = {
@@ -190,6 +185,23 @@ export async function makeSamplePdf(): Promise<Uint8Array> {
     iban: 'FR7630006000011234567890189',
     notes: defaultFrenchNotes(),
   };
+  return input;
+}
+
+/** Facture UBL d'exemple (même contenu que l'exemple Factur-X). */
+export async function makeSampleUbl(): Promise<Uint8Array> {
+  const [{ buildUbl }, input] = await Promise.all([import('../lib/facturx/ubl-build'), sampleInput()]);
+  return new TextEncoder().encode(buildUbl(input));
+}
+
+export async function makeSamplePdf(): Promise<Uint8Array> {
+  const [{ buildXml }, { renderInvoicePdf }, { embedFacturX }, { loadFonts }, input] = await Promise.all([
+    import('../lib/facturx/build'),
+    import('../lib/facturx/render'),
+    import('../lib/facturx/pdf'),
+    import('./fonts'),
+    sampleInput(),
+  ]);
   const pdf = await renderInvoicePdf(input, await loadFonts());
   const { bytes } = await embedFacturX(pdf, buildXml(input), { conformanceLevel: 'EN 16931', generated: true });
   return bytes;
@@ -253,7 +265,8 @@ export function mountAnalyzer(root: HTMLElement) {
     const old = sample.textContent;
     sample.textContent = 'Génération…';
     try {
-      await run(makeSamplePdf, 'exemple-factur-x.pdf', 'Création d’une facture d’exemple…');
+      if (root.dataset.sampleKind === 'ubl') await run(makeSampleUbl, 'exemple-facture-ubl.xml', 'Création d’une facture UBL d’exemple…');
+      else await run(makeSamplePdf, 'exemple-factur-x.pdf', 'Création d’une facture d’exemple…');
     } finally {
       sample.disabled = false;
       sample.textContent = old;

@@ -7,10 +7,11 @@ const { exclude } = Astro.props;
 const tools = [
   { path: '/lire-facture-factur-x/', title: 'Lire une facture Factur-X', text: 'Affichez le contenu du XML caché dans le PDF : lignes, TVA, IBAN, mentions.' },
   { path: '/valider-factur-x/', title: 'Valider un fichier Factur-X', text: 'Des dizaines de contrôles : calculs, champs obligatoires, PDF/A-3, nouvelles mentions 2026.' },
-  { path: '/creer-facture-factur-x/', title: 'Créer une facture Factur-X', text: 'Remplissez un formulaire ou partez de votre PDF : vous obtenez un Factur-X EN 16931.' },
+  { path: '/creer-facture-factur-x/', title: 'Créer une facture Factur-X', text: 'Remplissez un formulaire ou partez de votre PDF : vous obtenez un Factur-X EN 16931, ou un XML UBL.' },
+  { path: '/lire-facture-ubl/', title: 'Lire une facture UBL', text: 'Le format XML de Peppol et de la réforme, affiché comme une facture et contrôlé selon la norme EN 16931.' },
 ].filter((t) => t.path !== exclude);
 ---
-<div class="grid-3">
+<div class="grid-3 grid-tools">
   {tools.map((t) => (
     <a class="card tool-card" href={href(t.path)}>
       <h3>{t.title}</h3>

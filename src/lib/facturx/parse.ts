@@ -1,5 +1,6 @@
 import { detectProfile } from './codes';
 import type { Address, Invoice, InvoiceLine, Party, TaxBreakdown } from './types';
+import { readUbl } from './ubl';
 
 /*
  * Lecture d'un XML CII (Cross Industry Invoice D16B), le format embarqué dans
@@ -137,16 +138,15 @@ function tax(el: Element): TaxBreakdown {
   };
 }
 
-/** Transforme un XML CII en objet facture. Lève XmlParseError si ce n'est pas du CII. */
+/** Transforme un XML CII ou UBL en objet facture. Lève XmlParseError pour tout autre format. */
 export function readInvoice(xml: string | ParsedXml): Invoice {
   const parsed = typeof xml === 'string' ? parseXml(xml) : xml;
+  if (parsed.kind === 'UBL') return { ...readUbl(parsed), syntax: 'UBL' };
   if (parsed.kind !== 'CII') {
     const why =
       parsed.kind === 'ZUGFERD1'
         ? 'Ce fichier est au format ZUGFeRD 1.0 (CrossIndustryDocument), un ancien format qui n’est plus accepté par la réforme française.'
-        : parsed.kind === 'UBL'
-          ? 'Ce fichier est une facture UBL, pas du CII. Factur-X utilise exclusivement la syntaxe CII.'
-          : `Racine XML inattendue : <${parsed.root.localName}>. Une facture Factur-X commence par <rsm:CrossIndustryInvoice>.`;
+        : `Racine XML inattendue : <${parsed.root.localName}>. Une facture électronique commence par <rsm:CrossIndustryInvoice> (CII, Factur-X) ou par <Invoice> / <CreditNote> (UBL).`;
     throw new XmlParseError(why);
   }
   const r = parsed.root;
@@ -168,6 +168,7 @@ export function readInvoice(xml: string | ParsedXml): Invoice {
   const taxTotalEl = taxTotals.find((t) => !t.getAttribute('currencyID') || t.getAttribute('currencyID') === currency) ?? taxTotals[0];
 
   return {
+    syntax: 'CII',
     profile: detectProfile(guidelineId),
     guidelineId,
     businessProcess: txt(ctx, 'BusinessProcessSpecifiedDocumentContextParameter', 'ID'),
