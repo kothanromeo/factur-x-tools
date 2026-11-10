@@ -12,6 +12,7 @@ export const SITE = {
   siblings: [
     { name: 'CFONB & camt Tools', url: 'https://cfonb-camt-tools.kothanromeo.dev/', text: 'Convertir un relevé bancaire CFONB 120 ou camt.053 en Excel' },
     { name: 'FEC Tools', url: 'https://fec-tools.kothanromeo.dev/', text: 'Lire et vérifier un Fichier des Écritures Comptables' },
+    { name: 'Vérif Tiers', url: 'https://verif-tiers-tools.kothanromeo.dev/', text: 'Vérifier les SIREN, numéros de TVA et IBAN d’un fichier clients' },
   ],
   locale: 'fr_FR',
   lang: 'fr',
